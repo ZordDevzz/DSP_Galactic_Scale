@@ -71,6 +71,7 @@ namespace GalacticScale
                 harmony.PatchAll(typeof(PlanetSizeTranspiler));
                 harmony.PatchAll(typeof(TurretComponentTranspiler));
                 harmony.PatchAll(typeof(UnitComponentTranspiler));
+                harmony.PatchAll(typeof(DetermineCraftAstroIdTranspiler));
                 harmony.PatchAll(typeof(LagFixTranspiler));
                 // Environment.SetEnvironmentVariable("MONOMOD_DMD_DUMP", "");
                 harmony.PatchAll(typeof(PatchOnUnspecified_Debug));
