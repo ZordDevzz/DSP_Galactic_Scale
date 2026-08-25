@@ -580,7 +580,10 @@ namespace GalacticScale
 
         public static string New(GSPlanet planet)
         {
-            if (r is null) r = new GS2.Random(planet.Seed);
+            // #290: the static rng seeded once per process made "random" planet names
+            // depend on generation history. A fresh per-planet rng is a pure function
+            // of the planet seed.
+            var r = new GS2.Random(planet.Seed);
 
             var c = r.Next(1, 2);
 
