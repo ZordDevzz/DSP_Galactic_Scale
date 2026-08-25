@@ -72,7 +72,10 @@ namespace GalacticScale
                         }
 
                         calcPlanet.scanning = false;
-                        calcPlanet.scanned = true;
+                        // #233 belt-and-suspenders: if the generators were skipped because a
+                        // quit was in progress (backToMainMenu gate), do NOT commit the planet
+                        // as scanned - an empty scan marked scanned locks "no ore" into the UI.
+                        calcPlanet.scanned = UIRoot.instance == null || !UIRoot.instance.backToMainMenu;
                         if (processing.Contains(calcPlanet)) processing.Remove(calcPlanet);
                     }
                 }
