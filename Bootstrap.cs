@@ -90,7 +90,10 @@ namespace GalacticScale
                 harmony.PatchAll(typeof(PatchOnDFRelayComponent));
                 harmony.PatchAll(typeof(PatchOnDFTinderComponent));
                 harmony.PatchAll(typeof(PatchOnDigitalSystem));
-                // harmony.PatchAll(typeof(PatchOnDysonSphere));
+                harmony.PatchAll(typeof(PatchOnDysonSphere));
+                harmony.PatchAll(typeof(PatchOnDysonSwarm));
+                harmony.PatchAll(typeof(PatchOnDysonSphereRocket));
+                harmony.PatchAll(typeof(PatchOnUIDEDialogues));
                 harmony.PatchAll(typeof(PatchOnEnemyDFGroundSystem));
                 harmony.PatchAll(typeof(PatchOnEnemyDFHiveSystem));
                 harmony.PatchAll(typeof(PatchOnFactoryModel));

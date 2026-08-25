@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace GalacticScale
@@ -314,9 +314,11 @@ namespace GalacticScale
         private float InitDysonRadius()
         {
             _dysonRadius = StarDefaults.DysonRadius(this);
-            float newRadius = radius * _luminosity * 0.25f;
-            // GS2.Warn($"{Name} Companion:{BinaryCompanion} Luminosity:{_luminosity} Radius:{radius} Dyson Radius Set to {_dysonRadius} -> {newRadius} for {Spectr} spectr star of type {Type}. New Max should be {newRadius*40000}");
-            _dysonRadius = newRadius;
+            float minRadius = RadiusAU + 0.1f;
+            if (_dysonRadius < minRadius)
+            {
+                _dysonRadius = minRadius;
+            }
             return _dysonRadius;
         }
 

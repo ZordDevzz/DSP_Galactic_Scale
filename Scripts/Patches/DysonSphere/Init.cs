@@ -85,16 +85,11 @@ namespace GalacticScale
                         __instance.emissionColor = Configs.builtin.dysonSphereNeutronEmissionColor;
                     }
 
-                    __instance.defOrbitRadius = (float)((double)_starData.dysonRadius * 40000.0);
-                    __instance.minOrbitRadius = _starData.physicsRadius * 1.5f;
-                    if (__instance.minOrbitRadius < 4000f)
-                    {
-                        __instance.minOrbitRadius = 4000f;
-                    }
-                    __instance.maxOrbitRadius = __instance.defOrbitRadius * 2f;
-                    
-                    // Safely handle planets array
-                    if (_starData.planets != null && _starData.planets.Length > 0)
+                    // Calculate and refresh Dyson orbit bounds dynamically
+                    DysonSphereUtils.RefreshDysonOrbitBounds(__instance);
+
+                    // Safely handle avoidOrbitRadius for planet 0
+                    if (_starData.planets != null && _starData.planets.Length > 0 && _starData.planets[0] != null)
                     {
                         __instance.avoidOrbitRadius = (float)((double)_starData.planets[0].orbitRadius * 40000.0);
                     }
@@ -103,14 +98,8 @@ namespace GalacticScale
                         __instance.avoidOrbitRadius = __instance.minOrbitRadius * 1.5f;
                     }
                     
-                    if (_starData.type == EStarType.GiantStar)
-                    {
-                        __instance.minOrbitRadius *= 0.6f;
-                    }
-                    __instance.defOrbitRadius = Mathf.Round(__instance.defOrbitRadius / 100f) * 100f;
-                    __instance.minOrbitRadius = Mathf.Ceil(__instance.minOrbitRadius / 100f) * 100f;
-                    __instance.maxOrbitRadius = Mathf.Round(__instance.maxOrbitRadius / 100f) * 100f;
                     __instance.randSeed = _starData.seed;
+                    GS2.Log($"DysonSphere Initialized for {_starData.name}: Min={__instance.minOrbitRadius}, Def={__instance.defOrbitRadius}, Max={__instance.maxOrbitRadius}");
                 }
 
                 // Initialize swarm after arrays are set up
