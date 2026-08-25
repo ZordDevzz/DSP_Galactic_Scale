@@ -1668,15 +1668,23 @@
             "Usteli"
         };
 
+        private static int startIndexSeed = int.MinValue;
+
         public static void Reset()
         {
             var random = new GS2.Random(GSSettings.Seed);
             startIndex = random.Next(names.Length - 1);
+            startIndexSeed = GSSettings.Seed;
         }
 
         public static string GetName(int index)
         {
-            if (startIndex < 0) Reset();
+            // #290: startIndex used to latch once per PROCESS - from whichever galaxy
+            // generated first, which is the TIME-seeded default created when the
+            // galaxy-select screen opens. Names were random per boot, frozen per
+            // session. Re-derive whenever the galaxy seed changes: names become a
+            // pure function of the galaxy seed.
+            if (startIndex < 0 || startIndexSeed != GSSettings.Seed) Reset();
 
             var calcIndex = (index + startIndex) % names.Length;
             return names[calcIndex];

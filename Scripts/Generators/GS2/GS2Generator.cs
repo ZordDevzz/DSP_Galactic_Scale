@@ -198,7 +198,7 @@ namespace GalacticScale.Generators
                     // var tiPlanet = birthPlanet.Moons.Add(new GSPlanet("Titania McGrath", "Lol",
                     //     510, 0.13f, 66f, 900f, 0f,
                     //     66f, 360f, 0f, -1f));
-                    var tiPlanet = birthPlanet.Moons.Add(new GSPlanet("Titania McGrath", "AshenGelisol", GetStarMoonSize(birthStar, birthPlanet.Radius, false), 0.02f, 69f, 42069f, 0f, 69f, 420f, 0f, -1f));
+                    var tiPlanet = birthPlanet.Moons.Add(new GSPlanet("Titania McGrath", "AshenGelisol", GetStarMoonSize(birthStar, birthPlanet.Radius, false, new GS2.Random(GS2.Random.Mix(GSSettings.Seed, birthStar.Seed, 0x746974))), 0.02f, 69f, 42069f, 0f, 69f, 420f, 0f, -1f));
                     //tiPlanet.OrbitalPeriod = Utils.CalculateOrbitPeriodFromStarMass(tiPlanet.OrbitRadius, birthStar.mass);
                     return;
                 }

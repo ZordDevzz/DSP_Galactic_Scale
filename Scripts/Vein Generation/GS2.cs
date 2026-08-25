@@ -7,7 +7,12 @@ namespace GalacticScale
 {
     public static partial class VeinAlgorithms
     {
-        public static void GenerateVeinsGS2(GSPlanet gsPlanet) 
+        public static void GenerateVeinsGS2(GSPlanet gsPlanet)
+        {
+            lock (veinGenLock) GenerateVeinsGS2Locked(gsPlanet);
+        }
+
+        private static void GenerateVeinsGS2Locked(GSPlanet gsPlanet) 
         {
             // Debug.Log("Generating");
             random = new GS2.Random(gsPlanet.Seed);

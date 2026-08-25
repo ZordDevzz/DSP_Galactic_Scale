@@ -25,10 +25,18 @@ namespace GalacticScale
     public static partial class VeinAlgorithms
     {
         private static GS2.Random random;
+        // #290: vein generation runs on the scan thread, the compute thread and a UI
+        // prefix, all sharing the static rng above. Serializing the entry points keeps
+        // each planet's reseed-at-entry stream uninterleaved, making vein rolls a pure
+        // function of the planet seed regardless of which thread generates it.
+        internal static readonly object veinGenLock = new object();
 
         private static void GenBirthPoints(GSPlanet gsPlanet)
         {
-            random = new GS2.Random(GSSettings.Seed);
+            // #290: this used to REPLACE the shared static rng mid-generation for the
+            // birth planet; a local keeps birth-point rolls galaxy-seeded without
+            // hijacking the planet-seeded vein stream.
+            var random = new GS2.Random(GSSettings.Seed);
             var planet = gsPlanet.planetData;
             // GS2.Log("GenBirthPoints");
             Pose pose;

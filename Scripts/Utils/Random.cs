@@ -23,6 +23,14 @@ namespace GalacticScale
             {
                 return new Random(increment++);
             }
+
+            // #290: derive a per-object seed from (galaxy seed, object seed, salt) so
+            // every generation roll is a pure function of the galaxy seed - vanilla's
+            // fresh-rng-per-object pattern, order-independent across call sites.
+            public static int Mix(int galaxySeed, int objectSeed, int salt)
+            {
+                unchecked { return galaxySeed * 73856093 ^ objectSeed * 19349663 ^ salt; }
+            }
             public int Seed
             {
                 get => seed;
