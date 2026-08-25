@@ -19,6 +19,14 @@ namespace GalacticScale
         {
             //GS2.Warn("Fix");
 
+            // #233: quit-to-menu sets UIRoot.backToMainMenu and vanilla only clears it in
+            // CloseMainMenuUI (game-load start) - which this full-replacement prefix bypasses.
+            // GenerateVeins and the other planet-scan generators are gated on !backToMainMenu,
+            // so with the flag stuck every galaxy preview after the first quit scanned planets
+            // WITHOUT veins and the universe view showed no ore. Clear it the moment the
+            // galaxy-select screen opens: any quit teardown the flag guards is long finished.
+            if (UIRoot.instance != null) UIRoot.instance.backToMainMenu = false;
+
             if (GS2.canvasOverlay)
             {
                 //GS2.Warn("FIXING WITH GALAXYSELECT!");
