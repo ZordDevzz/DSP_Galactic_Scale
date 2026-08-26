@@ -2,7 +2,12 @@
 {
     public static partial class VeinAlgorithms
     {
-        public static void GenerateVeinsGS2W(GSPlanet gsPlanet) 
+        public static void GenerateVeinsGS2W(GSPlanet gsPlanet)
+        {
+            lock (veinGenLock) GenerateVeinsGS2WLocked(gsPlanet);
+        }
+
+        private static void GenerateVeinsGS2WLocked(GSPlanet gsPlanet) 
         {
             random = new GS2.Random(gsPlanet.Seed);
             

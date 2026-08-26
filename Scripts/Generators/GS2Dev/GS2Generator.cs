@@ -134,7 +134,7 @@ namespace GalacticScale.Generators
                         GSSettings.ThemeLibrary.Add("AshenGelisol", Themes.AshenGelisol);
                         Themes.AshenGelisol.Process();
                     }
-                    birthPlanet.Moons.Add(new GSPlanet("Titania McGrath", "AshenGelisol", GetStarMoonSize(birthStar, birthPlanet.Radius, false), 0.02f, 69f, 42069f, 0f, 69f, 420f, 0f, -1f));
+                    birthPlanet.Moons.Add(new GSPlanet("Titania McGrath", "AshenGelisol", GetStarMoonSize(birthStar, birthPlanet.Radius, false, new GS2.Random(GS2.Random.Mix(GSSettings.Seed, birthStar.Seed, 0x746974))), 0.02f, 69f, 42069f, 0f, 69f, 420f, 0f, -1f));
                     return;
                 }
 

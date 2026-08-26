@@ -803,7 +803,7 @@ namespace GalacticScale.Generators
                 // "Random"
                 if (listPosition > 13)
                 {
-                    DotNet35Random random = new();
+                    DotNet35Random random = new(GSSettings.Seed);
                     listPosition = random.Next(13);
                 }
             switch (listPosition)

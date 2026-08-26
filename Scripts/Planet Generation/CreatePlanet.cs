@@ -29,7 +29,9 @@ namespace GalacticScale
             planet.galaxy = galaxy;
             planet.star = star;
             //if (gsPlanet.Seed < 0) gsPlanet.Seed = random.Next();
-            planet.seed = gsPlanet.Seed = gsPlanet.Seed < 0 ? random.Next() : gsPlanet.Seed;
+            // #290: drawing from the shared ProcessGalaxy rng made planet seeds depend on
+            // how many rolls (hives etc.) preceded them; derive from star seed + index
+            planet.seed = gsPlanet.Seed = gsPlanet.Seed < 0 ? GS2.Random.Mix(GSSettings.Seed, star.seed, index + 1) & 0x7fffffff : gsPlanet.Seed;
             if (isMoon)
             {
                 planet.orbitAround = host.number;

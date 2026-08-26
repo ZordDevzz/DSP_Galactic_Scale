@@ -1,6 +1,7 @@
 # DSP Galactic Scale 2.0 Mod
 
 # BACKUP YOUR SAVES. SERIOUSLY.
+- Version 2.78.6 - AndrewLuebke fixed the second new game in a session generating no veins (#233) and made galaxy generation fully deterministic (#290): the same seed string now produces the same system names, themes, and vein amounts every time, across restarts. The seed-to-galaxy mapping shifts once with this update (it was never actually stable before); existing saves are unaffected.
 - Version 2.78.5 - AndrewLuebke fixed fleet auto-targeting on large systems (#258): craft star-frame thresholds now scale to the system/hive envelope.
 - Version 2.78.4 - Fixed the 2.78.1 vein/geothermal radius patches being applied twice (#284, thanks ZordDevzz); turret radius fix (#286); relay landing ETA on hover (#287).
 - Version 2.78.3 - Zord fixed a bug I introduced when merging PR's without paying attention to the merge conflicts.

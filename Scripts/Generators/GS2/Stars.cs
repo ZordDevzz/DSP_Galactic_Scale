@@ -119,7 +119,7 @@ namespace GalacticScale.Generators
             return result;
         }
 
-        private int GetStarMoonSize(GSStar star, int hostRadius, bool hostGas)
+        private int GetStarMoonSize(GSStar star, int hostRadius, bool hostGas, GS2.Random rng)
         {
             if (hostGas) hostRadius *= 10;
             var min = Utils.ParsePlanetSize(GetMinPlanetSizeForStar(star));
@@ -140,7 +140,7 @@ namespace GalacticScale.Generators
             var range = max - min;
             var sd = (float)range / 4;
             //int size = Utils.ParsePlanetSize(random.Next(min, max));
-            var size = Clamp(Utils.ClampedNormalSizeTelluric(random, min, max, GetSizeBiasForStar(star)), min, GetMaxPlanetSizeForStar(star));
+            var size = Clamp(Utils.ClampedNormalSizeTelluric(rng, min, max, GetSizeBiasForStar(star)), min, GetMaxPlanetSizeForStar(star));
             //if (size > hostRadius)
             //{
             //Warn($"MoonSize {size} selected for {star.Name} moon with host size {hostRadius} avg:{average} sd:{sd} max:{max} min:{min} range:{range} hostGas:{hostGas}");
@@ -152,22 +152,22 @@ namespace GalacticScale.Generators
             // return size;
         }
 
-        private int GetStarPlanetSize(GSStar star)
+        private int GetStarPlanetSize(GSStar star, GS2.Random rng)
         {
             // GS2.Warn("GetStarPlanetSize");
             var min = GetMinPlanetSizeForStar(star);
             var max = GetMaxPlanetSizeForStar(star);
             var bias = GetSizeBiasForStar(star);
-            var size = Utils.ClampedNormalSizeTelluric(random, min, max, bias);
+            var size = Utils.ClampedNormalSizeTelluric(rng, min, max, bias);
             return ParsePlanetSize(size);
         }
-        private int GetStarGasSize(GSStar star)
+        private int GetStarGasSize(GSStar star, GS2.Random rng)
         {
             // GS2.Warn("GetStarPlanetSize");
             var min = GetMinGasSizeForStar(star);
             var max = GetMaxGasSizeForStar(star);
             var bias = GetSizeBiasForStar(star);
-            var size = Utils.ClampedNormalSizeGas(random, min, max, bias);
+            var size = Utils.ClampedNormalSizeGas(rng, min, max, bias);
             return ParseGasSize(size);
         }
         private int ParsePlanetSize(int size)

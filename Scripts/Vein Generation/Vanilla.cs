@@ -6,7 +6,12 @@ namespace GalacticScale
 {
     public static partial class VeinAlgorithms
     {
-        public static void GenerateVeinsVanilla(GSPlanet gsPlanet) //, bool sketchOnly)
+        public static void GenerateVeinsVanilla(GSPlanet gsPlanet)
+        {
+            lock (veinGenLock) GenerateVeinsVanillaLocked(gsPlanet);
+        }
+
+        private static void GenerateVeinsVanillaLocked(GSPlanet gsPlanet) //, bool sketchOnly)
         {
             random = new GS2.Random(gsPlanet.Seed);
             var themeProto = LDB.themes.Select(gsPlanet.planetData.theme);

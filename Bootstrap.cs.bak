@@ -15,7 +15,7 @@ namespace GalacticScale
     }
 
  
-    [BepInPlugin("dsp.galactic-scale.2", "Galactic Scale 2 Plug-In", "2.78.4")]
+    [BepInPlugin("dsp.galactic-scale.2", "Galactic Scale 2 Plug-In", "2.78.5")]
     [BepInDependency("space.customizing.console", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("dsp.nebula-multiplayer-api", BepInDependency.DependencyFlags.SoftDependency)]
     public class Bootstrap : BaseUnityPlugin
@@ -71,6 +71,7 @@ namespace GalacticScale
                 harmony.PatchAll(typeof(PlanetSizeTranspiler));
                 harmony.PatchAll(typeof(TurretComponentTranspiler));
                 harmony.PatchAll(typeof(UnitComponentTranspiler));
+                harmony.PatchAll(typeof(DetermineCraftAstroIdTranspiler));
                 harmony.PatchAll(typeof(LagFixTranspiler));
                 // Environment.SetEnvironmentVariable("MONOMOD_DMD_DUMP", "");
                 harmony.PatchAll(typeof(PatchOnUnspecified_Debug));
@@ -85,7 +86,6 @@ namespace GalacticScale
                 harmony.PatchAll(typeof(PatchOnBuildTool_PathAddon));
                 harmony.PatchAll(typeof(PatchOnCloudSimulator));
                 harmony.PatchAll(typeof(PatchOnCosmicMessageManager));
-                harmony.PatchAll(typeof(PatchOnDefenseSystem));
                 harmony.PatchAll(typeof(PatchOnDFGTurretComponent));
                 harmony.PatchAll(typeof(PatchOnDFRelayComponent));
                 harmony.PatchAll(typeof(PatchOnDFTinderComponent));
@@ -138,6 +138,7 @@ namespace GalacticScale
                 harmony.PatchAll(typeof(PatchOnUIAdvisorTip));
                 harmony.PatchAll(typeof(PatchOnUIBuildingGrid));
                 harmony.PatchAll(typeof(PatchOnUICommunicatorIndicator));
+                harmony.PatchAll(typeof(PatchOnUIEnemyBriefInfo));
                 harmony.PatchAll(typeof(PatchOnUIEscMenu));
                 harmony.PatchAll(typeof(PatchOnUIGalaxySelect));
                 harmony.PatchAll(typeof(PatchOnUIGame));
