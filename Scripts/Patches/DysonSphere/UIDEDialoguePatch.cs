@@ -222,7 +222,8 @@ namespace GalacticScale
                     var p = __instance.starData.planets[i];
                     if (p != null && p.orbitRadius > 0f)
                     {
-                        float pOrbit = (float)((double)p.orbitRadius * 40000.0);
+                        float pOrbitAU = p.orbitAround != 0 && p.orbitAroundPlanet != null ? p.orbitAroundPlanet.orbitRadius : p.orbitRadius;
+                        float pOrbit = (float)((double)pOrbitAU * 40000.0);
                         if (Mathf.Abs(pOrbit - swarmRadius) < 2199.95f)
                         {
                             __result = -2;
@@ -252,7 +253,8 @@ namespace GalacticScale
                     var p = __instance.starData.planets[i];
                     if (p != null && p.orbitRadius > 0f)
                     {
-                        float pOrbit = (float)((double)p.orbitRadius * 40000.0);
+                        float pOrbitAU = p.orbitAround != 0 && p.orbitAroundPlanet != null ? p.orbitAroundPlanet.orbitRadius : p.orbitRadius;
+                        float pOrbit = (float)((double)pOrbitAU * 40000.0);
                         if (Mathf.Abs(pOrbit - orbitRadius) < 2199.95f)
                         {
                             __result = -2;
@@ -263,7 +265,7 @@ namespace GalacticScale
             }
             if (__instance.layersSorted != null)
             {
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < __instance.layersSorted.Length; j++)
                 {
                     if (__instance.layersSorted[j] != null && Mathf.Abs(__instance.layersSorted[j].orbitRadius - orbitRadius) < 999.95f)
                     {
@@ -295,9 +297,26 @@ namespace GalacticScale
             if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
             if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
 
+            if (__instance.starData?.planets != null)
+            {
+                for (int i = 0; i < __instance.starData.planets.Length; i++)
+                {
+                    var p = __instance.starData.planets[i];
+                    if (p != null && p.orbitRadius > 0f)
+                    {
+                        float pOrbitAU = p.orbitAround != 0 && p.orbitAroundPlanet != null ? p.orbitAroundPlanet.orbitRadius : p.orbitRadius;
+                        float pOrbit = (float)((double)pOrbitAU * 40000.0);
+                        if (Mathf.Abs(pOrbit - orbitRadius) < 2199.95f)
+                        {
+                            orbitRadius = Mathf.Ceil(pOrbit + 2200f);
+                        }
+                    }
+                }
+            }
+
             if (__instance.layersSorted != null)
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < __instance.layersSorted.Length; i++)
                 {
                     if (__instance.layersSorted[i] != null && Mathf.Abs(__instance.layersSorted[i].orbitRadius - orbitRadius) < 999.95f)
                     {

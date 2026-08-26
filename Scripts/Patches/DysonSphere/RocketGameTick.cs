@@ -259,7 +259,7 @@ namespace GalacticScale
             catch (Exception ex)
             {
                 GS2.Warn($"Error in PatchOnDysonSphereRocket.RocketGameTick: {ex.Message}\n{ex.StackTrace}");
-                return true;
+                return false; // Safely abort tick instead of double-ticking previous rockets
             }
         }
     }
