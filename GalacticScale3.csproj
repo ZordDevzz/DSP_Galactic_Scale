@@ -54,8 +54,8 @@
             <HintPath>Package\GSUI.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UI">
-          <HintPath Condition="Exists('D:\SteamLibrary\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\UnityEngine.UI.dll')">D:\SteamLibrary\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\UnityEngine.UI.dll</HintPath>
-          <HintPath Condition="!Exists('D:\SteamLibrary\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\UnityEngine.UI.dll')">$(MSBuildThisFileDirectory)..\CommonAPI\Libs\UnityEngine.UI.dll</HintPath>
+          <HintPath Condition="Exists('$(GameDir)\DSPGAME_Data\Managed\UnityEngine.UI.dll')">$(GameDir)\DSPGAME_Data\Managed\UnityEngine.UI.dll</HintPath>
+          <HintPath Condition="!Exists('$(GameDir)\DSPGAME_Data\Managed\UnityEngine.UI.dll')">$(MSBuildThisFileDirectory)..\CommonAPI\Libs\UnityEngine.UI.dll</HintPath>
         </Reference>
     </ItemGroup>
     <Target Name="CheckDevEnv" BeforeTargets="PrepareForBuild">

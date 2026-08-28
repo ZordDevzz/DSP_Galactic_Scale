@@ -9,6 +9,8 @@ namespace GalacticScale
     // Future improvement candidate: convert this speed scaling to a Harmony transpiler patching only the speed/accel constants.
     public class PatchOnDysonSphereRocket
     {
+        private static bool _rocketTickFailed;
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(DysonSphere), nameof(DysonSphere.RocketGameTick))]
         public static bool RocketGameTick(DysonSphere __instance)
@@ -263,7 +265,11 @@ namespace GalacticScale
             }
             catch (Exception ex)
             {
-                GS2.Warn($"Error in PatchOnDysonSphereRocket.RocketGameTick: {ex.Message}\n{ex.StackTrace}");
+                if (!_rocketTickFailed)
+                {
+                    GS2.Warn($"Error in PatchOnDysonSphereRocket.RocketGameTick: {ex.Message}\n{ex.StackTrace}");
+                    _rocketTickFailed = true;
+                }
                 return false; // Safely abort tick instead of double-ticking previous rockets
             }
         }
