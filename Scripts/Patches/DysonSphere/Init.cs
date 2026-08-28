@@ -114,6 +114,7 @@ namespace GalacticScale
                 __instance.inEditorRenderMaskS = -1;
                 __instance.inGameRenderMaskL = -1;
                 __instance.inGameRenderMaskS = -1;
+                __instance.needRecalculatePower = true;
 
                 return false; // Skip original method
             }

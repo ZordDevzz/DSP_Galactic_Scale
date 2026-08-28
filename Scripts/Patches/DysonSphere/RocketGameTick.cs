@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace GalacticScale
 {
+    // Note: Prefix-return-false replaces DysonSphere.RocketGameTick to dynamically scale rocket speed & acceleration with system envelope.
+    // Any third-party mod transpilers on RocketGameTick (e.g., MoreMegaStructures) will not execute while this prefix is active.
+    // Future improvement candidate: convert this speed scaling to a Harmony transpiler patching only the speed/accel constants.
     public class PatchOnDysonSphereRocket
     {
         [HarmonyPrefix]
@@ -15,6 +18,7 @@ namespace GalacticScale
                 if (__instance == null || __instance.starData == null) return true;
 
                 AstroData[] astrosData = __instance.starData.galaxy.astrosData;
+                if (astrosData == null) return true;
                 double num = 1.0 / 60.0;
 
                 // Scale rocket velocity and acceleration dynamically based on system max orbit radius
@@ -100,7 +104,8 @@ namespace GalacticScale
                             double num14 = 0.0;
                             double num15 = 1E+40;
                             int num16 = reference.planetId / 100 * 100;
-                            for (int j = num16; j < num16 + 10; j++)
+                            int maxAstro = Math.Min(num16 + 100, astrosData.Length);
+                            for (int j = num16; j < maxAstro; j++)
                             {
                                 float uRadius = astrosData[j].uRadius;
                                 if (!(uRadius < 1f))

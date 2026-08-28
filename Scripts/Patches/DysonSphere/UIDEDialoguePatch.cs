@@ -47,6 +47,18 @@ namespace GalacticScale
                 dysonSphere.maxOrbitRadius = dysonSphere.minOrbitRadius + 40000f; // Fallback: min + 1.0 AU
             }
 
+            // Legacy saves: spheres built under older formulas may have layers exceeding new bounds
+            if (dysonSphere.layersSorted != null)
+            {
+                for (int i = 0; i < dysonSphere.layersSorted.Length; i++)
+                {
+                    if (dysonSphere.layersSorted[i] != null && dysonSphere.layersSorted[i].orbitRadius + 4000f > dysonSphere.maxOrbitRadius)
+                    {
+                        dysonSphere.maxOrbitRadius = dysonSphere.layersSorted[i].orbitRadius + 4000f;
+                    }
+                }
+            }
+
             if (dysonSphere.maxOrbitRadius < dysonSphere.minOrbitRadius + 4000f)
             {
                 dysonSphere.maxOrbitRadius = dysonSphere.minOrbitRadius + 4000f;
@@ -285,17 +297,6 @@ namespace GalacticScale
             DysonSphereUtils.RefreshDysonOrbitBounds(__instance);
             if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
             if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
-            return false;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(DysonSphere), nameof(DysonSphere.QueryLayerRadius))]
-        public static bool QueryLayerRadius(DysonSphere __instance, ref float orbitRadius, out float orbitAngularSpeed, ref bool __result)
-        {
-            DysonSphereUtils.RefreshDysonOrbitBounds(__instance);
-            orbitAngularSpeed = 0f;
-            if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
-            if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
 
             if (__instance.starData?.planets != null)
             {
@@ -308,28 +309,169 @@ namespace GalacticScale
                         float pOrbit = (float)((double)pOrbitAU * 40000.0);
                         if (Mathf.Abs(pOrbit - orbitRadius) < 2199.95f)
                         {
-                            orbitRadius = Mathf.Ceil(pOrbit + 2200f);
+                            if (orbitRadius < pOrbit)
+                            {
+                                orbitRadius = Mathf.Floor(pOrbit - 2200f);
+                            }
+                            else
+                            {
+                                orbitRadius = Mathf.Ceil(pOrbit + 2200f);
+                            }
                         }
                     }
                 }
             }
 
-            if (__instance.layersSorted != null)
+            if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
+            if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
+            return false;
+        }
+
+        private static float PushLayersCeil(DysonSphere dysonSphere, float radius)
+        {
+            if (dysonSphere.layersSorted != null)
             {
-                for (int i = 0; i < __instance.layersSorted.Length; i++)
+                for (int i = 0; i < dysonSphere.layersSorted.Length; i++)
                 {
-                    if (__instance.layersSorted[i] != null && Mathf.Abs(__instance.layersSorted[i].orbitRadius - orbitRadius) < 999.95f)
+                    var layer = dysonSphere.layersSorted[i];
+                    if (layer != null && Mathf.Abs(layer.orbitRadius - radius) < 999.95f)
                     {
-                        orbitRadius = Mathf.Ceil(__instance.layersSorted[i].orbitRadius + 1000f);
+                        radius = Mathf.Ceil(layer.orbitRadius + 1000f);
                     }
                 }
             }
-            if (orbitRadius > __instance.maxOrbitRadius)
+            return radius;
+        }
+
+        private static float PushLayersFloor(DysonSphere dysonSphere, float radius)
+        {
+            if (dysonSphere.layersSorted != null)
             {
-                orbitRadius = __instance.maxOrbitRadius;
+                for (int i = dysonSphere.layersSorted.Length - 1; i >= 0; i--)
+                {
+                    var layer = dysonSphere.layersSorted[i];
+                    if (layer != null && Mathf.Abs(layer.orbitRadius - radius) < 999.95f)
+                    {
+                        radius = Mathf.Floor(layer.orbitRadius - 1000f);
+                    }
+                }
+            }
+            return radius;
+        }
+
+        private static float PushPlanetsCeil(DysonSphere dysonSphere, float radius)
+        {
+            if (dysonSphere.starData?.planets != null)
+            {
+                for (int i = 0; i < dysonSphere.starData.planets.Length; i++)
+                {
+                    var p = dysonSphere.starData.planets[i];
+                    if (p != null && p.orbitRadius > 0f)
+                    {
+                        float pOrbitAU = p.orbitAround != 0 && p.orbitAroundPlanet != null ? p.orbitAroundPlanet.orbitRadius : p.orbitRadius;
+                        float pOrbit = (float)((double)pOrbitAU * 40000.0);
+                        if (Mathf.Abs(pOrbit - radius) < 2199.95f)
+                        {
+                            radius = Mathf.Ceil(pOrbit + 2200f);
+                        }
+                    }
+                }
+            }
+            return radius;
+        }
+
+        private static float PushPlanetsFloor(DysonSphere dysonSphere, float radius)
+        {
+            if (dysonSphere.starData?.planets != null)
+            {
+                for (int i = dysonSphere.starData.planets.Length - 1; i >= 0; i--)
+                {
+                    var p = dysonSphere.starData.planets[i];
+                    if (p != null && p.orbitRadius > 0f)
+                    {
+                        float pOrbitAU = p.orbitAround != 0 && p.orbitAroundPlanet != null ? p.orbitAroundPlanet.orbitRadius : p.orbitRadius;
+                        float pOrbit = (float)((double)pOrbitAU * 40000.0);
+                        if (Mathf.Abs(pOrbit - radius) < 2199.95f)
+                        {
+                            radius = Mathf.Floor(pOrbit - 2200f);
+                        }
+                    }
+                }
+            }
+            return radius;
+        }
+
+        private static float ComputeAngularSpeed(float gravity, float orbitRadius)
+        {
+            if (orbitRadius <= 0f || gravity <= 0f) return 0f;
+            return Mathf.Sqrt(gravity / orbitRadius) / orbitRadius * 57.29578f;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(DysonSphere), nameof(DysonSphere.QueryLayerRadius))]
+        public static bool QueryLayerRadius(DysonSphere __instance, ref float orbitRadius, out float orbitAngularSpeed, ref bool __result)
+        {
+            DysonSphereUtils.RefreshDysonOrbitBounds(__instance);
+            orbitAngularSpeed = 0f;
+
+            if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
+            if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
+
+            float requestedRadius = orbitRadius;
+
+            // Pass 1: Forward-first search (push outward, then inward if needed)
+            float cand1 = requestedRadius;
+            cand1 = PushLayersCeil(__instance, cand1);
+            cand1 = PushPlanetsCeil(__instance, cand1);
+            cand1 = PushLayersCeil(__instance, cand1);
+            if (cand1 > __instance.maxOrbitRadius)
+            {
+                cand1 = __instance.maxOrbitRadius;
+            }
+            cand1 = PushLayersFloor(__instance, cand1);
+            cand1 = PushPlanetsFloor(__instance, cand1);
+            cand1 = PushLayersFloor(__instance, cand1);
+
+            if (cand1 < __instance.minOrbitRadius)
+            {
+                orbitRadius = __instance.minOrbitRadius;
+                orbitAngularSpeed = ComputeAngularSpeed(__instance.gravity, orbitRadius);
                 __result = false;
                 return false;
             }
+
+            // Pass 2: Backward-first search (push inward, then outward if needed)
+            float cand2 = requestedRadius;
+            cand2 = PushLayersFloor(__instance, cand2);
+            cand2 = PushPlanetsFloor(__instance, cand2);
+            cand2 = PushLayersFloor(__instance, cand2);
+            if (cand2 < __instance.minOrbitRadius)
+            {
+                cand2 = __instance.minOrbitRadius;
+            }
+            cand2 = PushLayersCeil(__instance, cand2);
+            cand2 = PushPlanetsCeil(__instance, cand2);
+            cand2 = PushLayersCeil(__instance, cand2);
+
+            if (cand2 > __instance.maxOrbitRadius)
+            {
+                orbitRadius = __instance.minOrbitRadius;
+                orbitAngularSpeed = ComputeAngularSpeed(__instance.gravity, orbitRadius);
+                __result = false;
+                return false;
+            }
+
+            // Select candidate closest to the originally requested radius
+            if (Mathf.Abs(cand1 - requestedRadius) < Mathf.Abs(cand2 - requestedRadius))
+            {
+                orbitRadius = cand1;
+            }
+            else
+            {
+                orbitRadius = cand2;
+            }
+
+            orbitAngularSpeed = ComputeAngularSpeed(__instance.gravity, orbitRadius);
             __result = true;
             return false;
         }
