@@ -298,32 +298,27 @@ namespace GalacticScale
             if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
             if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
 
-            if (__instance.starData?.planets != null)
-            {
-                for (int i = 0; i < __instance.starData.planets.Length; i++)
-                {
-                    var p = __instance.starData.planets[i];
-                    if (p != null && p.orbitRadius > 0f)
-                    {
-                        float pOrbitAU = p.orbitAround != 0 && p.orbitAroundPlanet != null ? p.orbitAroundPlanet.orbitRadius : p.orbitRadius;
-                        float pOrbit = (float)((double)pOrbitAU * 40000.0);
-                        if (Mathf.Abs(pOrbit - orbitRadius) < 2199.95f)
-                        {
-                            if (orbitRadius < pOrbit)
-                            {
-                                orbitRadius = Mathf.Floor(pOrbit - 2200f);
-                            }
-                            else
-                            {
-                                orbitRadius = Mathf.Ceil(pOrbit + 2200f);
-                            }
-                        }
-                    }
-                }
-            }
+            float requestedRadius = orbitRadius;
 
-            if (orbitRadius < __instance.minOrbitRadius) orbitRadius = __instance.minOrbitRadius;
-            if (orbitRadius > __instance.maxOrbitRadius) orbitRadius = __instance.maxOrbitRadius;
+            float cand1 = PushPlanetsCeil(__instance, requestedRadius);
+            if (cand1 > __instance.maxOrbitRadius)
+                cand1 = __instance.maxOrbitRadius;
+            cand1 = PushPlanetsFloor(__instance, cand1);
+
+            float cand2 = PushPlanetsFloor(__instance, requestedRadius);
+            if (cand2 < __instance.minOrbitRadius)
+                cand2 = __instance.minOrbitRadius;
+            cand2 = PushPlanetsCeil(__instance, cand2);
+
+            bool c1ok = cand1 >= __instance.minOrbitRadius && cand1 <= __instance.maxOrbitRadius;
+            bool c2ok = cand2 >= __instance.minOrbitRadius && cand2 <= __instance.maxOrbitRadius;
+            if (c1ok && c2ok)
+                orbitRadius = Mathf.Abs(cand1 - requestedRadius) < Mathf.Abs(cand2 - requestedRadius) ? cand1 : cand2;
+            else if (c1ok)
+                orbitRadius = cand1;
+            else if (c2ok)
+                orbitRadius = cand2;
+            // else: the whole [min,max] band sits inside a ring; leave the clamped request.
             return false;
         }
 
