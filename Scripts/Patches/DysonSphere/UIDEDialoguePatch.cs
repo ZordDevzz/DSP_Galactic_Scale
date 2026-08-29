@@ -450,9 +450,12 @@ namespace GalacticScale
 
             if (cand2 > __instance.maxOrbitRadius)
             {
-                orbitRadius = __instance.minOrbitRadius;
+                // cand1 already passed the minOrbitRadius check above, so it is valid in [min, max].
+                // Use it rather than bailing out with minOrbitRadius + false, which would discard
+                // a perfectly good outward candidate and leave the OK button dead.
+                orbitRadius = cand1;
                 orbitAngularSpeed = ComputeAngularSpeed(__instance.gravity, orbitRadius);
-                __result = false;
+                __result = true;
                 return false;
             }
 
